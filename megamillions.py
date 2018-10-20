@@ -8,9 +8,23 @@
 
 import sys
 
+# Winning prize tables
+prizes = {
+'5,0': 1000000,
+'4,1': 10000,
+'4,0': 500,
+'3,1': 200,
+'3,0': 10,
+'2,1': 10,
+'1,1': 4,
+'0,1': 2,
+}
+
 try:
 	whiteBalls = str(sys.argv[1]).split(",")
 	yellowBall = int(sys.argv[2])
+	totalPrize = 0
+	jackpotWon = False
 	
 	# Open the tickets file and read/parse it
 	with open('tickets.txt','r') as f:
@@ -25,11 +39,30 @@ try:
 			if currentNumbers[n] in whiteBalls:
 				numbersMatched = numbersMatched + 1
 		if int(currentNumbers[len(currentNumbers)-1]) == yellowBall:
-			yellowBallMatched = "MATCHED"
+			yellowBallMatched = '1'
+			yellowBallMatchedString = "MATCHED"
 		else:
-			yellowBallMatched = "NOT MATCHED"
+			yellowBallMatched = '0'
+			yellowBallMatchedString = "NOT MATCHED"
 		print currentNumbers
-		print 'White Balls Matched: ' + str(numbersMatched) + ' Yellow Ball: ' + yellowBallMatched
-
+		print 'White Balls Matched: ' + str(numbersMatched) + ' Yellow Ball: ' + yellowBallMatchedString
+		if str(numbersMatched) + ',' + yellowBallMatched in prizes:
+			print 'Winner'
+			print '$' + str(prizes.get(str(numbersMatched) + ',' + yellowBallMatched, 0))
+			totalPrize += prizes.get(str(numbersMatched) + ',' + yellowBallMatched, 0)
+		elif numbersMatched == 5 and yellowBallMatched == '1':
+			print 'JACKPOT'
+			jackpotWon = True
+		else:
+			print 'Not a Winner'
+	
+	print '\nTotal won:'
+	print '$' + str(totalPrize)
+	print 
+	if jackpotWon:
+		print 'YOU WON THE JACKPOT!!!'
+		print u"\U0001F911 \U0001F911 \U0001F911"
+	else:
+		print 'Sorry, you didn\'t win the jackpot :('
 except IndexError:
 	print 'Usage: python megamillions.py <winning white balls> <winning yellow ball>'
